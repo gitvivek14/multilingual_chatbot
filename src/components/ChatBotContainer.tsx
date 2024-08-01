@@ -298,7 +298,6 @@ const ChatBotContainer = ({ flow }: { flow: Flow }) => {
 			updateTextAreaFocus(currPath);
 			syncVoiceWithChatInput(keepVoiceOnRef.current && !block.chatDisabled, settings);
 
-			// cleanup logic after preprocessing of a block (affects only streaming messages)
 			isBotStreamingRef.current = false
 		}
 		callNewBlock(currPath, block, params);
@@ -310,9 +309,6 @@ const ChatBotContainer = ({ flow }: { flow: Flow }) => {
 		}
 	}, [hasFlowStarted]);
 
-	/**
-	 * Sets up the notifications feature (initial toggle status and sound).
-	 */
 	const setUpNotifications = useCallback(async () => {
 		setNotificationToggledOn(settings.notification?.defaultToggledOn as boolean);
 	
@@ -339,9 +335,6 @@ const ChatBotContainer = ({ flow }: { flow: Flow }) => {
 		audioBufferRef.current = await audioContextRef.current.decodeAudioData(audioSource);
 	}, [settings.notification?.defaultToggledOn, settings.notification?.sound, settings.notification?.volume]);
 
-	/**
-	 * Checks for initial user interaction (required to play audio/notification sound).
-	 */
 	const handleFirstInteraction = useCallback(() => {
 		setHasInteractedPage(true);
 		if (!hasFlowStarted && settings.general?.flowStartTrigger === "ON_PAGE_INTERACT") {
@@ -368,9 +361,6 @@ const ChatBotContainer = ({ flow }: { flow: Flow }) => {
 		setSettings({...settings, isOpen});
 	}, [settings, setSettings]);
 
-	/**
-	 * Handles notification count update and notification sound.
-	 */
 	const handleNotifications = useCallback(() => {
 		// if no audio context or no messages, return
 		if (!audioContextRef.current || messages.length === 0) {
@@ -378,7 +368,7 @@ const ChatBotContainer = ({ flow }: { flow: Flow }) => {
 		}
 
 		const message = messages[messages.length - 1]
-		// if message is null or sent by user or is bot typing or bot is embedded, return
+		
 		if (!message || message.sender === "user" || isBotTyping || (settings.general?.embedded
 			&& isChatBotVisible(chatBodyRef.current as HTMLDivElement))) {
 			return;
@@ -399,9 +389,7 @@ const ChatBotContainer = ({ flow }: { flow: Flow }) => {
 		}
 	}, [settings, messages, isBotTyping, isScrolling, notificationToggledOn, hasInteractedPage]);
 
-	/**
-	 * Retrieves current path for user.
-	 */
+
 	const getCurrPath = useCallback(() => {
 		return paths.length > 0 ? paths[paths.length - 1] : null;
 	}, [paths])
